@@ -39,6 +39,14 @@ if dein#load_state('/home/d3vr/.config/nvim/bundles')
   call dein#add('haya14busa/incsearch-fuzzy.vim')
   call dein#add('haya14busa/incsearch-easymotion.vim')
   call dein#add('tpope/vim-repeat')
+  call dein#add('vimwiki/vimwiki')
+  call dein#add('mhinz/vim-startify')
+  call dein#add('Shougo/deoplete.nvim')
+  if !has('nvim')
+	  call dein#add('roxma/nvim-yarp')
+	  call dein#add('roxma/vim-hug-neovim-rpc')
+  endif
+  call dein#add('terryma/vim-multiple-cursors')
   " #endplugins
  
   " You can specify revision/branch/tag.
@@ -78,13 +86,39 @@ if (empty($TMUX))
 endif
 " #endtruecolor
 
+" #funcs
+"fu! SaveSess()
+    "execute 'call mkdir(~/.config/nvim/.sessions)'
+    "execute 'mksession! ~/.config/nvim/.sessions/session'
+"endfunction
+
+"fu! RestoreSess()
+"execute 'so ~/.config/nvim/.sessions/session'
+"execute 'so ~/.config/nvim/init.vim'
+""if bufexists(1)
+    ""for l in range(1, bufnr('$'))
+        ""if bufwinnr(l) == -1
+            ""exec 'sbuffer ' . l
+        ""endif
+    ""endfor
+""endif
+"endfunction
+
+"autocmd VimLeave * call SaveSess()
+"autocmd VimEnter * call RestoreSess()
+" #endfuncs
+
 " #settings 
 filetype plugin on
+set noacd
 let g:airline#extensions#tabline#enabled = 1
 let g:airline#extensions#tabline#buffer_min_count = 2
 let g:airline_powerline_fonts = 1 
 let g:comfortable_motion_no_default_key_mappings = 1
 let g:goyo_width=120
+let g:startify_change_to_dir = 0
+"let g:user_emmet_leader_key='<leader>e'
+let g:tagbar_autoshowtag = 1
 colorscheme onedark
 let g:airline_theme='onedark'
 set showmatch " show matching brackets
@@ -123,7 +157,7 @@ nnoremap zz :vertical resize
 nnoremap <silent> <F3> :NERDTreeToggle<CR> 
 map <S-F2> :mksession! ~/vim_session <cr> " Quick write session with F2
 map <S-F3> :source ~/vim_session <cr>     " And load session with F3
-map <C-p> :Denite file_rec<cr>
+map <C-p> :Denite file_rec buffer<cr>
 nnoremap <CR> o<Esc>
 nnoremap <C-o> O<Esc>
 nnoremap <F12> :Goyo<CR>
@@ -131,14 +165,17 @@ nmap <silent> <Esc> :noh<CR> :TagbarClose<CR>
 nmap <leader>r :so %<CR>
 nmap <silent> <leader>t :TagbarToggle<CR>
 nmap <silent> <F10> :TagbarToggle<CR>
+nmap <leader>u :Dein update<CR>
 nmap <leader>v :e ~/.config/nvim/init.vim<CR>
 nmap <leader>3 :e ~/.i3/config<CR>
 nmap <leader>b :Denite buffer<CR>
+nmap <leader>p :echo expand('%')<CR>
 inoremap <A-h> <C-o>h
 inoremap <A-j> <C-o>j
 inoremap <A-k> <C-o>k
 inoremap <A-l> <C-o>l
 nnoremap <C-s> :w<CR>
+inoremap <C-s> <Esc>:w<CR>
 nmap gt <Plug>(easymotion-bd-f)
 nmap gw <Plug>(easymotion-bd-w)
 nmap gj <Plug>(easymotion-j)
@@ -146,6 +183,7 @@ nmap gk <Plug>(easymotion-k)
 map /  <Plug>(incsearch-forward)
 map ?  <Plug>(incsearch-backward)
 map g/  <<Plug>(incsearch-easymotion-stay)
+map s/  <<Plug>(incsearch-stay)
 map z/ <Plug>(incsearch-fuzzy-/)
 map z? <Plug>(incsearch-fuzzy-?)
 map zg/ <Plug>(incsearch-fuzzy-stay)
