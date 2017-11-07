@@ -4,15 +4,15 @@ if &compatible
 endif
 
 " Required:
-set runtimepath+=/home/d3vr/.config/nvim/bundles/repos/github.com/Shougo/dein.vim
+set runtimepath+=~/.config/nvim/bundles/repos/github.com/Shougo/dein.vim
 
 " Required:
-if dein#load_state('/home/d3vr/.config/nvim/bundles')
-  call dein#begin('/home/d3vr/.config/nvim/bundles')
+if dein#load_state('~/.config/nvim/bundles')
+  call dein#begin('~/.config/nvim/bundles')
 
   " Let dein manage dein
   " Required:
-  call dein#add('/home/d3vr/.config/nvim/bundles/repos/github.com/Shougo/dein.vim')
+  call dein#add('~/.config/nvim/bundles/repos/github.com/Shougo/dein.vim')
   call dein#add('haya14busa/dein-command.vim')
 
   " Add or remove your plugins here:
