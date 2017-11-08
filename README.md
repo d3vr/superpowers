@@ -1,2 +1,2 @@
-# superpowers
-Config files and/or tips to acquire linux superpowers
+# :zap: superpowers
+* (Neo)vim config file: configs/init.vim
