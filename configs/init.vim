@@ -18,15 +18,12 @@ if dein#load_state('~/.config/nvim/bundles')
   " Add or remove your plugins here:
   " #plugins
   call dein#add('joshdick/onedark.vim')
-  call dein#add('Shougo/neosnippet.vim')
-  call dein#add('Shougo/neosnippet-snippets')
   call dein#add('sheerun/vim-polyglot')
   call dein#add('othree/html5.vim')
   call dein#add('vim-airline/vim-airline')
   call dein#add('scrooloose/nerdtree')
   call dein#add('scrooloose/nerdcommenter')
   call dein#add('easymotion/vim-easymotion')
-  call dein#add('yuttie/comfortable-motion.vim')
   call dein#add('Shougo/denite.nvim')
   call dein#add('tpope/vim-fugitive')
   call dein#add('tpope/vim-surround')
@@ -41,17 +38,15 @@ if dein#load_state('~/.config/nvim/bundles')
   call dein#add('tpope/vim-repeat')
   call dein#add('vimwiki/vimwiki')
   call dein#add('mhinz/vim-startify')
-  call dein#add('Shougo/deoplete.nvim')
-  if !has('nvim')
-	  call dein#add('roxma/nvim-yarp')
-	  call dein#add('roxma/vim-hug-neovim-rpc')
-  endif
   call dein#add('terryma/vim-multiple-cursors')
+  call dein#add('joeytwiddle/sexy_scroller.vim')
+  call dein#add('mileszs/ack.vim')
+  call dein#add('jiangmiao/auto-pairs')
+  call dein#add('SirVer/ultisnips')
+  call dein#add('Valloric/YouCompleteMe')
+  call dein#add('honza/vim-snippets')
   " #endplugins
  
-  " You can specify revision/branch/tag.
-  call dein#add('Shougo/vimshell', { 'rev': '3787e5' })
-
   " Required:
   call dein#end()
   call dein#save_state()
@@ -87,36 +82,47 @@ endif
 " #endtruecolor
 
 " #funcs
-"fu! SaveSess()
-    "execute 'call mkdir(~/.config/nvim/.sessions)'
-    "execute 'mksession! ~/.config/nvim/.sessions/session'
-"endfunction
+fu! SaveSess()
+  execute 'mksession! ' . getcwd() . '/.session.vim'
+endfunction
 
-"fu! RestoreSess()
-"execute 'so ~/.config/nvim/.sessions/session'
-"execute 'so ~/.config/nvim/init.vim'
-""if bufexists(1)
-    ""for l in range(1, bufnr('$'))
-        ""if bufwinnr(l) == -1
-            ""exec 'sbuffer ' . l
-        ""endif
-    ""endfor
-""endif
-"endfunction
+fu! RestoreSess()
+  if filereadable(getcwd() . '/.session.vim')
+    execute 'so ' . getcwd() . '/.session.vim'
+    if bufexists(1)
+      for l in range(1, bufnr('$'))
+        if bufwinnr(l) == -1
+          exec 'sbuffer ' . l
+        endif
+      endfor
+    endif
+  endif
+endfunction
 
-"autocmd VimLeave * call SaveSess()
-"autocmd VimEnter * call RestoreSess()
-" #endfuncs
+autocmd VimLeave * call SaveSess()
+autocmd VimEnter * nested call RestoreSess()
+
+set sessionoptions-=options  " Don't save options
+
+if !isdirectory($HOME."/.config/nvim/undo")
+    call mkdir($HOME."/.config/nvim/undo", "", 0700)
+endif
+set undodir=~/.config/nvim/undo
+set undofile
+"#endfuncs
 
 " #settings 
 filetype plugin on
 set noacd
+set cursorline
+"set cursorcolumn
 let g:airline#extensions#tabline#enabled = 1
 let g:airline#extensions#tabline#buffer_min_count = 2
 let g:airline_powerline_fonts = 1 
 let g:comfortable_motion_no_default_key_mappings = 1
 let g:goyo_width=120
 let g:startify_change_to_dir = 0
+let g:deoplete#enable_at_startup = 1
 "let g:user_emmet_leader_key='<leader>e'
 let g:tagbar_autoshowtag = 1
 colorscheme onedark
@@ -135,6 +141,16 @@ set path+=**
 let NERDTreeMapActivateNode='l'
 let g:tagbar_autofocus = 1
 let g:tagbar_autoclose = 1
+
+let g:ackprg = 'ag --vimgrep --smart-case'                                                   
+cnoreabbrev ag Ack
+
+set tabstop=4
+set shiftwidth=4
+set list lcs=tab:\|\ 
+let g:airline#extensions#tabline#buffer_idx_mode = 1
+let g:airline#extensions#tabline#buffer_nr_format = '%s: '
+let NERDTreeHijackNetrw = 0
 " #endsettings
 
 
@@ -142,12 +158,9 @@ let g:tagbar_autoclose = 1
 " SCROLLING
 map ; :
 map <Leader> <Plug>(easymotion-prefix)
-nnoremap <silent> <C-d> :call comfortable_motion#flick(100)<CR>
-nnoremap <silent> <C-u> :call comfortable_motion#flick(-100)<CR>
-nnoremap <silent> <C-e> 3<C-e> 
-nnoremap <silent> <C-y> 3<C-y>
-nnoremap <M-j> <C-e> 
-nnoremap <M-k> <C-y> 
+nnoremap <silent> <C-s-n> :enew!<CR>
+nnoremap <M-j> 3<C-e>
+nnoremap <M-k> 3<C-y>
 " WINDOW MANAGEMENT
 nmap <C-J> <C-W>j
 nmap <C-K> <C-W>k
@@ -162,7 +175,7 @@ nnoremap <CR> o<Esc>
 nnoremap <C-o> O<Esc>
 nnoremap <F12> :Goyo<CR>
 nmap <silent> <Esc> :noh<CR> :TagbarClose<CR>
-nmap <leader>r :so %<CR>
+nmap <leader>r :so ~/.config/nvim/init.vim<CR>
 nmap <silent> <leader>t :TagbarToggle<CR>
 nmap <silent> <F10> :TagbarToggle<CR>
 nmap <leader>u :Dein update<CR>
@@ -187,9 +200,38 @@ map s/  <<Plug>(incsearch-stay)
 map z/ <Plug>(incsearch-fuzzy-/)
 map z? <Plug>(incsearch-fuzzy-?)
 map zg/ <Plug>(incsearch-fuzzy-stay)
-nmap <C-PageUp> :bp<CR>
-nmap <C-PageDown> :bn<CR>
-nmap <S-e> :bp<CR>
-nmap <S-r> :bn<CR>
-nmap <S-x> :bd<CR>
+nmap <C-PageUp> :bp!<CR>
+nmap <C-PageDown> :bn!<CR>
+nmap <S-e> <C-PageUp>
+nmap <S-r> <C-PageDown> 
+nmap <S-x> :bd!<CR>
+nmap <leader>1 <Plug>AirlineSelectTab1
+nmap <leader>2 <Plug>AirlineSelectTab2
+nmap <leader>3 <Plug>AirlineSelectTab3
+nmap <leader>4 <Plug>AirlineSelectTab4
+nmap <leader>5 <Plug>AirlineSelectTab5
+nmap <leader>6 <Plug>AirlineSelectTab6
+nmap <leader>7 <Plug>AirlineSelectTab7
+nmap <leader>8 <Plug>AirlineSelectTab8
+nmap <leader>9 <Plug>AirlineSelectTab9
+nmap <leader>- <Plug>AirlineSelectPrevTab
+nmap <leader>+ <Plug>AirlineSelectNextTab
+map <C-_> <leader>c<space>
+imap <C-_> <Esc><leader>c<space>i
+
+"inoremap <silent><expr> <TAB>
+"\ pumvisible() ? "\<C-n>" :
+"\ <SID>check_back_space() ? "\<TAB>" :
+"\ deoplete#mappings#manual_complete()
+"function! s:check_back_space() abort "{{{
+"let col = col('.') - 1
+"return !col || getline('.')[col - 1]  =~ '\s'
+"endfunction"}}}
+
+"inoremap <expr><C-h>
+"\ deoplete#smart_close_popup()."\<C-h>"
+"inoremap <expr><BS>
+"\ deoplete#smart_close_popup()."\<C-h>"
+
+"inoremap <expr><C-g>     deoplete#undo_completion()
 " #endmappings
