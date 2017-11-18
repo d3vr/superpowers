@@ -10,7 +10,6 @@ set shortmess=aoO
 badd +0 README.md
 argglobal
 silent! argdel *
-argadd .git/COMMIT_EDITMSG
 edit README.md
 set splitbelow splitright
 set nosplitbelow
@@ -27,18 +26,18 @@ setlocal fml=1
 setlocal fdn=20
 setlocal fen
 silent! normal! zE
-let s:l = 2 - ((1 * winheight(0) + 20) / 40)
+let s:l = 1 - ((0 * winheight(0) + 20) / 41)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-2
+1
 normal! 0
 tabnext 1
 if exists('s:wipebuf') && getbufvar(s:wipebuf, '&buftype') isnot# 'terminal'
   silent exe 'bwipe ' . s:wipebuf
 endif
 unlet! s:wipebuf
-set winheight=1 winwidth=20 winminheight=0 winminwidth=1 shortmess=filnxtToOIc
+set winheight=1 winwidth=20 winminheight=0 winminwidth=1 shortmess=filnxtToOc
 let s:sx = expand("<sfile>:p:r")."x.vim"
 if file_readable(s:sx)
   exe "source " . fnameescape(s:sx)

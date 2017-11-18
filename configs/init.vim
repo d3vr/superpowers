@@ -1,4 +1,4 @@
-"dein Scripts-----------------------------
+"shawncplus/phpcomplete.vihmdein Scripts-----------------------------
 if &compatible
   set nocompatible               " Be iMproved
 endif
@@ -43,8 +43,21 @@ if dein#load_state('~/.config/nvim/bundles')
   call dein#add('mileszs/ack.vim')
   call dein#add('jiangmiao/auto-pairs')
   call dein#add('SirVer/ultisnips')
-  call dein#add('Valloric/YouCompleteMe')
+  "call dein#add('Valloric/YouCompleteMe')
   call dein#add('honza/vim-snippets')
+  call dein#add('wakatime/vim-wakatime')
+  call dein#add('lfilho/cosco.vim')
+  call dein#add('hlissner/vim-ultisnips-snippets')
+  call dein#add('junegunn/vim-easy-align')
+  call dein#add('tmhedberg/matchit')
+  call dein#add('Shougo/deoplete.nvim')
+  call dein#add('shawncplus/phpcomplete.vim')
+  call dein#add('ap/vim-css-color')
+  call dein#add('KabbAmine/vCoolor.vim')
+  call dein#add('dhruvasagar/vim-table-mode')
+  call dein#add('euclio/vim-markdown-composer')
+  call dein#add('pangloss/vim-javascript')
+  call dein#add('tpope/vim-eunuch')
   " #endplugins
  
   " Required:
@@ -109,6 +122,45 @@ if !isdirectory($HOME."/.config/nvim/undo")
 endif
 set undodir=~/.config/nvim/undo
 set undofile
+"
+"
+" Execute 'cmd' while redirecting output.
+" Delete all lines that do not match regex 'filter' (if not empty).
+" Delete any blank lines.
+" Delete '<whitespace><number>:<whitespace>' from start of each line.
+" Display result in a scratch buffer.
+function! s:Filter_lines(cmd, filter)
+  let save_more = &more
+  set nomore
+  redir => lines
+  silent execute a:cmd
+  redir END
+  let &more = save_more
+  new
+  setlocal buftype=nofile bufhidden=hide noswapfile
+  put =lines
+  g/^\s*$/d
+  %s/^\s*\d\+:\s*//e
+  if !empty(a:filter)
+    execute 'v/' . a:filter . '/d'
+  endif
+  0
+endfunction
+command! -nargs=? Scriptnames call s:Filter_lines('scriptnames', <q-args>)
+
+" Called once right before you start selecting multiple cursors
+function! Multiple_cursors_before()
+	if exists('g:deoplete#disable_auto_complete') 
+	   let g:deoplete#disable_auto_complete = 1
+	endif
+endfunction
+
+" Called once only when the multiple selection is canceled (default <Esc>)
+function! Multiple_cursors_after()
+	if exists('g:deoplete#disable_auto_complete')
+	   let g:deoplete#disable_auto_complete = 0
+	endif
+endfunction
 "#endfuncs
 
 " #settings 
@@ -151,19 +203,37 @@ set list lcs=tab:\|\
 let g:airline#extensions#tabline#buffer_idx_mode = 1
 let g:airline#extensions#tabline#buffer_nr_format = '%s: '
 let NERDTreeHijackNetrw = 0
+"let g:auto_comma_or_semicolon = 1
+"let g:cosco_filetype_whitelist = ['php', 'javascript', 'javascript.jsx', 'css']
+set hidden
+let g:UltiSnipsExpandTrigger       = '<tab>'
+let g:UltiSnipsListSnippets        = '<c-tab>'
+let g:UltiSnipsJumpForwardTrigger  = '<c-j>'
+let g:UltiSnipsJumpBackwardTrigger = '<c-k>'
+"let g:multi_cursor_next_key = '<C-d>'
+"let g:multi_cursor_prev_key = '<C-s-d>'
+"let g:multi_cursor_skip_key = '<C-k>'
+"g:multi_cursor_quit_key = '<'
+"let g:vcoolor_lowercase = 1
+set breakindent
+let g:table_mode_corner='|'
+let g:loaded_netrw       = 1
+let g:loaded_netrwPlugin = 1
 " #endsettings
 
 
 " #mappings
 " SCROLLING
-map ; :
+"map ; :
 map <Leader> <Plug>(easymotion-prefix)
-nnoremap <silent> <C-s-n> :enew!<CR>
+"nnoremap <silent> <C-s-n> :enew!<CR>
 nnoremap <M-j> 3<C-e>
 nnoremap <M-k> 3<C-y>
 " WINDOW MANAGEMENT
-nmap <C-J> <C-W>j
-nmap <C-K> <C-W>k
+map <M-u> gj
+map <M-i> gk
+nnoremap <C-J> <C-W>j
+nnoremap <C-K> <C-W>k
 nmap <c-h> <c-W>h
 nmap <c-l> <c-W>l
 nnoremap zz :vertical resize 
@@ -171,16 +241,17 @@ nnoremap <silent> <F3> :NERDTreeToggle<CR>
 map <S-F2> :mksession! ~/vim_session <cr> " Quick write session with F2
 map <S-F3> :source ~/vim_session <cr>     " And load session with F3
 map <C-p> :Denite file_rec buffer<cr>
+"map <C-r> :TagbarToggle<cr>
 nnoremap <CR> o<Esc>
 nnoremap <C-o> O<Esc>
+nmap <silent> <F10> :TagbarToggle<CR>
 nnoremap <F12> :Goyo<CR>
 nmap <silent> <Esc> :noh<CR> :TagbarClose<CR>
 nmap <leader>r :so ~/.config/nvim/init.vim<CR>
 nmap <silent> <leader>t :TagbarToggle<CR>
-nmap <silent> <F10> :TagbarToggle<CR>
 nmap <leader>u :Dein update<CR>
 nmap <leader>v :e ~/.config/nvim/init.vim<CR>
-nmap <leader>3 :e ~/.i3/config<CR>
+nmap <leader>i :e ~/.i3/config<CR>
 nmap <leader>b :Denite buffer<CR>
 nmap <leader>p :echo expand('%')<CR>
 inoremap <A-h> <C-o>h
@@ -189,10 +260,12 @@ inoremap <A-k> <C-o>k
 inoremap <A-l> <C-o>l
 nnoremap <C-s> :w<CR>
 inoremap <C-s> <Esc>:w<CR>
-nmap gt <Plug>(easymotion-bd-f)
+nmap s <Plug>(easymotion-overwin-f)
 nmap gw <Plug>(easymotion-bd-w)
 nmap gj <Plug>(easymotion-j)
 nmap gk <Plug>(easymotion-k)
+map gl <Plug>(easymotion-lineforward)
+map gh <Plug>(easymotion-linebackward)
 map /  <Plug>(incsearch-forward)
 map ?  <Plug>(incsearch-backward)
 map g/  <<Plug>(incsearch-easymotion-stay)
@@ -218,20 +291,35 @@ nmap <leader>- <Plug>AirlineSelectPrevTab
 nmap <leader>+ <Plug>AirlineSelectNextTab
 map <C-_> <leader>c<space>
 imap <C-_> <Esc><leader>c<space>i
-
-"inoremap <silent><expr> <TAB>
-"\ pumvisible() ? "\<C-n>" :
-"\ <SID>check_back_space() ? "\<TAB>" :
-"\ deoplete#mappings#manual_complete()
-"function! s:check_back_space() abort "{{{
-"let col = col('.') - 1
-"return !col || getline('.')[col - 1]  =~ '\s'
-"endfunction"}}}
-
-"inoremap <expr><C-h>
-"\ deoplete#smart_close_popup()."\<C-h>"
-"inoremap <expr><BS>
-"\ deoplete#smart_close_popup()."\<C-h>"
-
-"inoremap <expr><C-g>     deoplete#undo_completion()
+autocmd FileType javascript,css,php nmap <silent> <Leader>; <Plug>(cosco-commaOrSemiColon)
+autocmd FileType javascript,css,php imap <silent> <Leader>; <c-o><Plug>(cosco-commaOrSemiColon)
+vnoremap <silent> al :<c-u>norm!0v$h<cr>
+vnoremap <silent> il :<c-u>norm!^vg_<cr>
+onoremap <silent> al :norm val<cr>
+onoremap <silent> il :norm vil<cr>
+xmap ga <Plug>(EasyAlign)
+nmap ga <Plug>(EasyAlign)
+" Copy to clipboard
+vnoremap  <leader>y  "+y
+nnoremap  <leader>Y  "+yg_
+nnoremap  <leader>y  "+y
+nnoremap  <leader>yy  "+yy
+" Paste from clipboard
+nnoremap <leader>p "+p
+nnoremap <leader>P "+P
+vnoremap <leader>p "+p
+vnoremap <leader>P "+P
+inoremap <leader>P <c-o>p
+inoremap <leader>p <c-o>P
+imap gll console.log()<Esc>==f(a
+vmap gl cgll<Esc>p
+imap gdd dd()<Esc>==f(a
+imap gdu dump()<Esc>==f(a
+nmap <leader>tt :TableModeToggle<CR>
+map <C-a> <esc>ggVG<CR>
+imap <C-Space> <C-X><C-O>
 " #endmappings
+
+" #commands
+cnoreabbrev W w !sudo tee % > /dev/null
+" #endcommands
